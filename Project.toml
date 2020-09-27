@@ -3,6 +3,9 @@ uuid = "83d096e0-3cb1-4393-bc33-bb21be5fd375"
 authors = ["Klaus Crusius <klaus.crusius@web.de> and contributors"]
 version = "0.1.0"
 
+[deps]
+IterTools = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
+
 [compat]
 julia = "1"
 
