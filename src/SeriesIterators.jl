@@ -45,7 +45,7 @@ function gen_bernoulli(::Type{T}) where T<:Integer
     B = Vector{Rational{T}}(undef, 2)
     B[1] = 1
     B[2] = -1 // 2
-    Z = zero(Rational{BigInt})
+    Z = zero(Rational{T})
     function _bernoulli(n::Integer)
         b = B
         n <= 1 && return b[n+1]
@@ -57,24 +57,35 @@ function gen_bernoulli(::Type{T}) where T<:Integer
             n0 = (length(b) - 1 ) * 2
             sizehint!(b, ((m + 80) >> 6) << 6)
             resize!(b, m)
-            _bernoulli!(b, n0, (m - 1) * 2 - 1)
+            _bernoulli!(b, n0, (m - 1) * 2 - 1, n)
         end
         b[n÷2 + 2]
     end
     _bernoulli
 end
 
-function _bernoulli!(B::Vector{Rational{T}}, n0::Integer, n::Integer) where T
-    for m = n0:2:n
-        sum = -B[1] // (m + 1)
-        sum -= B[2]
-        mok = T((m * (m - 1)) ÷ 2)
-        for k = 2:2:m-1
-            sum -= B[k÷2 + 2] * mok // (m - k + 1)
-            mok *= (m - k) // (k + 1)
-            mok *= (m - k - 1) // (k + 2)
+function _bernoulli!(B::Vector{Rational{T}}, n0::Integer, n::Integer, nn::Integer) where T
+    lastx = 0
+    try
+        for m = n0:2:n
+            sum = -B[1] // T(m + 1)
+            sum -= B[2]
+            mok = T((m * (m - 1)) ÷ 2)
+            for k = 2:2:m-1
+                sum -= B[k÷2 + 2] // T(m - k + 1) * mok
+                mok *= T(m - k) // T(k + 1)
+                mok *= T(m - k - 1) // T(k + 2)
+            end
+            lastx = m ÷ 2 + 2
+            B[lastx] = sum
         end
-        B[m÷2 + 2] = sum
+    catch
+        if lastx > 0
+            resize!(B, lastx)
+        end
+        if lastx < nn ÷ 2 + 2
+            rethrow()
+        end
     end
     nothing
 end

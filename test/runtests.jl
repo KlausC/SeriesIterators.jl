@@ -39,6 +39,20 @@ end
 
 end
 
+@testset "bernoulli(Int128)" begin
+    bernoulli128 = SeriesIterators.gen_bernoulli(Int128)
+    @test bernoulli128(10) == 5 // 66
+    @test bernoulli128(58)  == 84483613348880041862046775994036021 // 354
+    @test_throws OverflowError bernoulli128(60)
+end
+
+@testset "bernoulli(Int16)" begin
+    bernoulli16 = SeriesIterators.gen_bernoulli(Int16)
+    @test bernoulli16(10) == 5 // 66
+    @test bernoulli16(14) == 7 // 6
+    @test_throws OverflowError bernoulli16(16)
+end
+
 @testset "cumulative sum iterator" begin
     itr = -10:2:10
     @test collect(icumsum(itr)) == cumsum(itr)
