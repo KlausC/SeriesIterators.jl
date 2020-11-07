@@ -39,4 +39,9 @@ end
 
 end
 
+@testset "cumulative sum iterator" begin
+    itr = -10:2:10
+    @test collect(icumsum(itr)) == cumsum(itr)
+end
+
 end
